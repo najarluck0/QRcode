@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: rgb(255, 255, 255);
+            color: #000000;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            font-family: serif;        }
+
+        header {
+            background-color: #000000;
+            color: #ffffff;
+            padding: 20px;
+            font-size: 2.5em;
+            font-weight: bold;
+            text-transform: uppercase;
+            
+            width: 100%;
+            box-shadow:  0px 4px 8px rgb(91, 91, 91);
+            box-sizing: border-box;
+            
+        }
+
+        .content {
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow:  0px 4px 8px  rgb(0, 0, 0);
+            box-sizing: border-box;
+            margin: 20px auto;
+            flex-grow: 1;
+            color: #000000;
+        }
+
+        .input-container {
+            width: 100%;
+        
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.2em;
+            border: 1px solid #000000;
+            border-radius: 8px;
+            background-color: #f1f1f1;;
+            color: #000000;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus {
+            background-color: #ffffff;
+            border-color: #000000;
+            color: rgb(0, 0, 0);
+        }
+
+        input[type="submit"] {
+            padding: 12px 30px;
+            background-color: #4a90e2;
+            border: none;
+            color: rgb(255, 255, 255);
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            box-shadow:  0px 4px 8px  rgb(0, 0, 0);
+        }
+
+        input[type="submit"]:hover {
+            background-color: #000000;
+            color: #ffffff;
+            border: 1px solid grey;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        .qr-code-container {
+            margin-top: 20px;
+        }
+
+        .qr-code-container img {
+            max-width: 100%;
+            border: 2px solid #ffffff;
+            padding: 10px;
+        }
+
+        footer {
+            background-color: #000000;
+            color: #ffffff;
+            padding: 10px 0;
+            font-size: 1em;
+            width: 100%;
+            text-align: center;
+            margin-top: auto;
+            box-shadow: 2px 2px 4px 4px rgb(91, 91, 91);
+            box-sizing: border-box;
+        }
+
+        .download-btn {
+            padding: 12px 30px;
+            background-color: #4e84c1;
+            border: none;
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+            box-shadow:  0px 4px 8px  rgb(0, 0, 0);
+        }
+        .qr-code-container img {
+            max-width: 80%;  /* Limit the maximum width to 80% of its container */
+            max-height: 200px;  /* Limit the maximum height */
+            width: auto;  /* Maintain aspect ratio */
+            height: auto;  /* Maintain aspect ratio */
+            border: 2px solid grey;
+            
+            box-shadow:  0px 4px 8px  grey;
+            padding: 10px solid #fff;
+        }
+        .input-container label {
+            margin-bottom: 25px;  /* Space between label and input */
+        }
+
+        .input-container input {
+            margin-top: 20px;  /* Space between label and input */
+        }
+
+
+
+        .download-btn:hover {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        /* Make input fields and buttons responsive */
+        @media (max-width: 600px) {
+            .content {
+                padding: 15px;
+            }
+
+            header {
+                font-size: 1.8em;
+            }
+
+            .download-btn {
+                width: 100%;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        QR Code Generator
+    </header>
+
+    <div class="content">
+        <h2>Generate Your QR Code</h2>
+        <form method="POST" action="/generate">
+            <div class="input-container">
+                <label for="data" style="font-size: 1.2em; font-weight: bold;">Enter URL or Text:</label><br>
+                <input type="text" id="data" name="data" placeholder="Enter URL or text to encode" required>
+            </div>
+            <input type="submit" value="Generate QR Code">
+        </form>
+
+        <!-- Display QR Code -->
+        {% if qr_code_url %}
+        <div class="qr-code-container">
+            <h3>Your QR Code:</h3>
+            <img src="{{ qr_code_url }}" alt="QR Code">
+            
+            <!-- Filename and Download Confirmation -->
+            <form method="POST" action="/download" style="margin-top: 20px;" id="download-form">
+                <div class="input-container">
+                    <label for="filename" style="font-size: 1.2em; font-weight: bold;">Enter filename for download:</label><br>
+                    <input type="text" id="filename" name="filename" placeholder="Enter filename (optional)" value="qr_code.png">
+                </div>
+                <input type="hidden" name="qr_code_url" value="{{ qr_code_url }}">
+                <input type="submit" class="download-btn" value="Confirm Download">
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <footer>
+        <p>&copy; 2024 QR Code Generator. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // Optional: Confirm the download before proceeding
+        document.getElementById('download-form').addEventListener('submit', function(event) {
+            const filename = document.getElementById('filename').value;
+            const confirmed = confirm(`Do you want to download the QR code as "${filename}"?`);
+            
+            if (!confirmed) {
+                event.preventDefault(); // Prevent form submission if not confirmed
+            }
+        });
+    </script>
+
+</body>
+</html>
